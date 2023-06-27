@@ -21,9 +21,14 @@ const CourseSchema = new Schema({
     type: String,
     unique: true,
   },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+  }, // Category modeli ile ilişki oluşturduk.
 });
 
-CourseSchema.pre('validate', function (next) { // Arrow fonksiyon "()=>{}" yerine standart fonksiyon "function(){}" kullanma sebebim "this" kullanabilmek.
+CourseSchema.pre('validate', function (next) {
+  // Arrow fonksiyon "()=>{}" yerine standart fonksiyon "function(){}" kullanma sebebim "this" kullanabilmek.
   this.slug = slugify(this.name, {
     lower: true,
     strict: true, // ": + " vb. karakterleri yok sayar.

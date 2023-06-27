@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 
 const pageRoute = require('./routes/pageRoute');
 const courseRoute = require('./routes/courseRoute');
+const categoryRoute = require('./routes/categoryRoute');
 
 const app = express();
 const port = 3000;
@@ -30,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', pageRoute);
 // Artık get, post vs yerine use ile kullanıyoruz.
 app.use('/courses', courseRoute);
+app.use('/categories', categoryRoute);
 
 app.listen(port, () => {
   console.log(`App started on port ${port}`);
