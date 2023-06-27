@@ -29,3 +29,18 @@ exports.getAllCourses = async (req, res) => {
     });
   }
 };
+
+exports.getCourse = async (req, res) => {
+  try {
+    const course = await Course.findOne({slug: req.params.slug}); // findById ile _id: req.params.id kullanmak yerine, findOne ile slug: req.params.slug kullanıyoruz.
+    res.status(200).render('course', {
+      course,
+      page_name: 'courses',
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      error,
+    });
+  }
+};
