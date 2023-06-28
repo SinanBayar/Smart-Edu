@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 
 const pageRoute = require('./routes/pageRoute');
 const courseRoute = require('./routes/courseRoute');
@@ -36,11 +37,14 @@ app.use(
     secret: 'my_keyboard_cat',
     resave: false,
     saveUninitialized: true,
+    store: MongoStore.create({
+      mongoUrl: 'mongodb://127.0.0.1:27017/smartedu-db',
+    }), // Session bilgilerini veritabanına yolluyoruz ki server restart aldığında session sonlanmasın.
   })
 );
 
 // Routes
-app.use('*', (req, res, next) => { 
+app.use('*', (req, res, next) => {
   userIN = req.session.userID; // Globaldeki userIN değişkenimizi login yapıldığındaki userID ile eşleştiriyoruz.
   next();
 });
