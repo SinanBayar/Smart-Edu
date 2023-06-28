@@ -1,4 +1,5 @@
 exports.getIndexPage = (req, res) => {
+  console.log(req.session.userID); // Sayfa açılışında hangi kullanıcı varsa, onun sessionID'sini görelim.
   res.status(200).render('index', {
     page_name: 'index',
   });

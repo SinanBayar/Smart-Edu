@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const session = require('express-session');
 
 const pageRoute = require('./routes/pageRoute');
 const courseRoute = require('./routes/courseRoute');
@@ -20,6 +21,9 @@ mongoose
     console.log(err);
   });
 
+// Global Variable
+global.userIN = null; // Globalde userIN isimli bir değişken oluşturuyoruz.
+
 // Template Engine
 app.set('view engine', 'ejs');
 
@@ -27,8 +31,19 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  session({
+    secret: 'my_keyboard_cat',
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 // Routes
+app.use('*', (req, res, next) => { 
+  userIN = req.session.userID; // Globaldeki userIN değişkenimizi login yapıldığındaki userID ile eşleştiriyoruz.
+  next();
+});
 app.use('/', pageRoute);
 // Artık get, post vs yerine use ile kullanıyoruz.
 app.use('/courses', courseRoute);
