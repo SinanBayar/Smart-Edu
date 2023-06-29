@@ -25,6 +25,10 @@ const CourseSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
   }, // Category modeli ile ilişki oluşturduk.
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  }, // User modeli ile ilişki oluşturduk.
 });
 
 CourseSchema.pre('validate', function (next) {
