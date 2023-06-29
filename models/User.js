@@ -18,9 +18,15 @@ const UserSchema = new Schema({
   },
   role: {
     type: String,
-    enum: ["Student", "Teacher", "Admin"], // Alabileceği değerler.
+    enum: ['Student', 'Teacher', 'Admin'], // Alabileceği değerler.
     default: 'Student',
   },
+  courses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Course',
+    },
+  ], // Bir kullanıcının birden fazla aldığı kurs olabileceği için "[{}]" içerisinde yazdık.
 });
 
 UserSchema.pre('save', function (next) {
