@@ -22,13 +22,29 @@ exports.createCourse = async (req, res) => {
 exports.getAllCourses = async (req, res) => {
   try {
     const categorySlug = req.query.categories; // query'den gelen parametre(categories) yakalanıyor.
+    const query = req.query.search; // query'den gelen parametre(search(formdaki name="search")) yakalanıyor.
     const category = await Category.findOne({ slug: categorySlug });
     let filter = {};
     if (categorySlug) {
       filter = { category: category._id };
     }
 
-    const courses = await Course.find(filter).sort('-createdAt');
+    if (query) {
+      filter = { name: query };
+    }
+
+    if (!query && !categorySlug) {
+      (filter.name = ''), (filter.category = null);
+    }
+
+    const courses = await Course.find({
+      $or: [
+        { name: { $regex: '.*' + filter.name + '.*', $options: 'i' } },
+        { category: filter.category },
+      ],
+    })
+      .sort('-createdAt')
+      .populate('user');
     const categories = await Category.find();
 
     res.status(200).render('courses', {
@@ -52,9 +68,11 @@ exports.getCourse = async (req, res) => {
     // findById ile _id: req.params.id kullanmak yerine, findOne ile slug: req.params.slug kullanıyoruz.
     // populate kullanarak course modeline bağlı olan user modelindeki bilgileri de kullanabiliyoruz.
     const user = await User.findById(req.session.userID);
+    const categories = await Category.find();
     res.status(200).render('course', {
       course,
       user,
+      categories,
       page_name: 'courses',
     });
   } catch (error) {
