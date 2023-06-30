@@ -51,8 +51,10 @@ exports.getCourse = async (req, res) => {
     );
     // findById ile _id: req.params.id kullanmak yerine, findOne ile slug: req.params.slug kullanıyoruz.
     // populate kullanarak course modeline bağlı olan user modelindeki bilgileri de kullanabiliyoruz.
+    const user = await User.findById(req.session.userID);
     res.status(200).render('course', {
       course,
+      user,
       page_name: 'courses',
     });
   } catch (error) {
@@ -67,6 +69,20 @@ exports.enrollCourse = async (req, res) => {
   try {
     const user = await User.findById(req.session.userID);
     await user.courses.push({ _id: req.body.course_id }); // addToSet() kullanarak aynı kursun tekrar eklenmesi engellenebilirdi fakat sonraki derste bu durumu daha farklı çözeceğiz.
+    await user.save();
+    res.status(200).redirect('/users/dashboard');
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      error,
+    });
+  }
+};
+
+exports.releaseCourse = async (req, res) => {
+  try {
+    const user = await User.findById(req.session.userID);
+    await user.courses.pull({ _id: req.body.course_id });
     await user.save();
     res.status(200).redirect('/users/dashboard');
   } catch (error) {

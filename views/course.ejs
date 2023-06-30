@@ -21,12 +21,14 @@
           </div>
           <div class="post-content">
             <div class="post-date">
+              <% if(user && !(user.courses.includes(course._id))) { %> <!-- Bir kullanıcı var ve bu kullanıcının course'leri, bu course'yi içermiyorsa kodu göster. -->
               <form method="POST" action="/courses/enroll"> <!-- Öğrencinin kursa kayıt olmasını sağlayacak form. -->
                 <input type="hidden" name="course_id" value="<%= course._id %>"> <!-- Artık form ile beraber gizli olarak tıklanan kursun id bilgisini de gönderiyoruz. -->
                 <button  class="btn btn-lg btn-warning text-white">
                   <span>ENROLL</span>
                 </button>
               </form>
+              <% } %>
             </div>
             <div class="meta-info-blog">
               <span

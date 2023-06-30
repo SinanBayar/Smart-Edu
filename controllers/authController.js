@@ -21,11 +21,9 @@ exports.loginUser = async (req, res) => {
     const user = await User.findOne({ email }); // Artık mongoDB'de callback function kullanılmadığı için mail ile aradığımız kullanıcıyı önce user değişkenine atıyoruz. Daha sonra bu user değişkeni true ise yeni işlemler yapıyoruz.
     if (user) {
       bcrypt.compare(password, user.password, (err, same) => {
-        if (same) {
-          // USER SESSION
-          req.session.userID = user._id;
-          res.status(200).redirect('/users/dashboard');
-        }
+        // USER SESSION
+        req.session.userID = user._id;
+        res.status(200).redirect('/users/dashboard');
       });
     }
   } catch (error) {
@@ -43,7 +41,9 @@ exports.logoutUser = (req, res) => {
 };
 
 exports.getDashboardPage = async (req, res) => {
-  const user = await User.findOne({ _id: req.session.userID }).populate('courses') // id'si, session'daki userID'ye eşit olan kullanıcıyı bul.
+  const user = await User.findOne({ _id: req.session.userID }).populate(
+    'courses'
+  ); // id'si, session'daki userID'ye eşit olan kullanıcıyı bul.
   const categories = await Category.find();
   const courses = await Course.find({ user: req.session.userID });
   res.status(200).render('dashboard', {

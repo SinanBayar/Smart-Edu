@@ -29,7 +29,8 @@
                 </div>
                 <div class="course-desc">
                   <p>
-                    <%= courses[i].description %>
+                    <%= courses[i].description.substring(0, 90) + "..." %>
+                    <!-- Course descriptionlarının maks 100 karakter olmasını ve geçmesi durumunda sonuna "..." gelmesini sağlar. -->
                   </p>
                 </div>
               </div>
