@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
+const methodOverride = require('method-override');
 
 const pageRoute = require('./routes/pageRoute');
 const courseRoute = require('./routes/courseRoute');
@@ -48,6 +49,11 @@ app.use((req, res, next) => {
   res.locals.flashMessages = req.flash(); // Flash mesajlarını flashMessages değişkeni ile sayfalarda kullanmak üzere yakalıyoruz.
   next();
 });
+app.use(
+  methodOverride('_method', {
+    methods: ['GET', 'POST'],
+  })
+); 
 
 // Routes
 app.use('*', (req, res, next) => {
