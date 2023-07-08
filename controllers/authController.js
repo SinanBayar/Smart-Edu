@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { validationResult } = require('express-validator'); // Validation sonuçlarını buradan çalıştırıyoruz.
 const User = require('../models/User');
 const Category = require('../models/Category');
 const Course = require('../models/Course');
@@ -8,10 +9,13 @@ exports.createUser = async (req, res) => {
     const user = await User.create(req.body);
     res.status(201).redirect('/login');
   } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      error,
-    });
+    const result = validationResult(req);
+    // console.log(result); // Register sayfasında tıklanınca çıkan error'ü konsola yazdırıyoruz
+    // console.log(result.array()[0].msg); // Register sayfasında tıklanınca çıkan error'deki mesajı konsola yazdırıyoruz
+    for (let i = 0; i < result.array().length; i++) {
+      req.flash('error', `${result.array()[i].msg}`);
+    }
+    res.status(400).redirect('/register');
   }
 };
 
@@ -19,12 +23,20 @@ exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email }); // Artık mongoDB'de callback function kullanılmadığı için mail ile aradığımız kullanıcıyı önce user değişkenine atıyoruz. Daha sonra bu user değişkeni true ise yeni işlemler yapıyoruz.
-    if (user) {
+    if (user) { // Girilen kullanıcı adı var ise;
       bcrypt.compare(password, user.password, (err, same) => {
-        // USER SESSION
-        req.session.userID = user._id;
-        res.status(200).redirect('/users/dashboard');
+        if (same) { // Password'ü doğru girmemiz durumu
+          // USER SESSION
+          req.session.userID = user._id;
+          res.status(200).redirect('/users/dashboard');
+        } else { // Password'ü yanşlış girmemiz durumu
+          req.flash('error', 'Your password is not correct!');
+          res.status(400).redirect('/login');
+        }
       });
+    } else { // Girilen kullanıcı adı yok ise;
+      req.flash('error', 'User is not exist!');
+      res.status(400).redirect('/login');
     }
   } catch (error) {
     res.status(400).json({
