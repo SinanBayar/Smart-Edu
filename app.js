@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const flash = require('connect-flash');
 
 const pageRoute = require('./routes/pageRoute');
 const courseRoute = require('./routes/courseRoute');
@@ -42,6 +43,11 @@ app.use(
     }), // Session bilgilerini veritabanına yolluyoruz ki server restart aldığında session sonlanmasın.
   })
 );
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals.flashMessages = req.flash(); // Flash mesajlarını flashMessages değişkeni ile sayfalarda kullanmak üzere yakalıyoruz.
+  next();
+});
 
 // Routes
 app.use('*', (req, res, next) => {

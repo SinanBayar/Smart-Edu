@@ -32,7 +32,8 @@ exports.getContactPage = (req, res) => {
 };
 
 exports.sendEmail = async (req, res) => {
-  const outputMessage = `
+  try {
+    const outputMessage = `
     <h1>Mail Details</h1>
     <ul>
       <li>Name: ${req.body.name}</li>
@@ -42,25 +43,31 @@ exports.sendEmail = async (req, res) => {
     <p>${req.body.message}</p>
 
   `;
-  // email'ini "https://ethereal.email/" üzerinden oluşturabilirsin.
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    secure: false,
-    auth: {
-      user: 'clifford.prohaska47@ethereal.email',
-      pass: '9MRQt6FFGH2k3WrkcH',
-    },
-  });
-  // send mail with defined transport object
-  const info = await transporter.sendMail({
-    from: '"SmartEdu Contact Form"	clifford.prohaska47@ethereal.email', // sender address
-    to: 'clifford.prohaska47@ethereal.email', // list of receivers
-    subject: 'SmartEdu Contact Form New Message ✔', // Subject line
-    html: outputMessage, // html body
-  });
+    // email'ini "https://ethereal.email/" üzerinden oluşturabilirsin.
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.ethereal.email',
+      port: 587,
+      secure: false,
+      auth: {
+        user: 'clifford.prohaska47@ethereal.email',
+        pass: '9MRQt6FFGH2k3WrkcH',
+      },
+    });
+    // send mail with defined transport object
+    const info = await transporter.sendMail({
+      from: '"SmartEdu Contact Form"	clifford.prohaska47@ethereal.email', // sender address
+      to: 'clifford.prohaska47@ethereal.email', // list of receivers
+      subject: 'SmartEdu Contact Form New Message ✔', // Subject line
+      html: outputMessage, // html body
+    });
 
-  console.log('Message sent: %s', info.messageId);
-  console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-  res.status(200).redirect('contact');
+    console.log('Message sent: %s', info.messageId);
+    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    req.flash('success', 'We received your message succesfully');
+    res.status(200).redirect('contact');
+  } catch (err) {
+    // req.flash('error', `Something Happened! ${err}`);
+    req.flash('error', "Something Happened!");
+    res.status(200).redirect('contact');
+  }
 };
