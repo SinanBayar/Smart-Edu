@@ -3,8 +3,8 @@
 <%- include('partials/_navigation'); %> 
 
 <% if(user) { %> 
-  
-<% if(user.role === 'Student') { %>
+
+  <% if(user.role === 'Student') { %>
 
 <div class="all-title-box">
   <div class="container text-center">
@@ -69,7 +69,9 @@
 </div>
 <!-- end section -->
 
-<% } %> <% if(user.role === 'Teacher') { %>
+<% } %> 
+
+<% if(user.role === 'Teacher') { %>
 
 <div class="all-title-box">
   <div class="container text-center">
@@ -97,19 +99,19 @@
 
       <div class="col-lg-12 blog-post-single">
         <div class="mt-4">
-          <% if(flashMessages) { %>
+          <% if(flashMessages) { %> 
 
             <% if(flashMessages.success) { %>
-              <div class="alert alert-success">
-                <%= flashMessages.success %>
-              </div>
-    
-            <% } else if(flashMessages.error) { %>
-              <div class="alert alert-danger">
-                <%= flashMessages.error %>
-              </div>
-            <% } %>
-    
+          <div class="alert alert-success">
+            <%= flashMessages.success %>
+          </div>
+
+          <% } else if(flashMessages.error) { %>
+          <div class="alert alert-danger">
+            <%= flashMessages.error %>
+          </div>
+          <% } %> 
+          
           <% } %>
         </div>
         <div class="blog-author">
@@ -142,7 +144,10 @@
             <div class="clearfix">
               <ul style="list-style: none; padding-left: 0">
                 <li style="float: left">
-                  <button class="btn btn-primary rounded-0 text-white">
+                  <button 
+                    class="btn btn-primary rounded-0 text-white"
+                    data-toggle="modal"
+                    data-target="#updateCourse<%= courses[i]._id %>">
                     <span>UPDATE</span>
                   </button>
                 </li>
@@ -159,6 +164,96 @@
           </div>
         </div>
       </div>
+
+      <!-- UPDATE Modal -->
+      <div
+        class="modal fade"
+        id="updateCourse<%= courses[i]._id %>"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="myModalLabel"
+      >
+        <div
+          class="modal-dialog modal-dialog-centered modal-lg"
+          role="document"
+        >
+          <div class="modal-content">
+            <div class="modal-body customer-box">
+              <!-- Tab panes -->
+              <div class="tab-content">
+                <div class="tab-pane active" id="Login">
+                  <form method="POST" action="/courses/<%= courses[i].slug %>?_method=PUT" class="form-horizontal">
+                    <div class="form-group">
+                      <div class="col-sm-12">
+                        <input
+                          type="text"
+                          name="name"
+                          value="<%= courses[i].name %>"
+                          class="form-control"
+                          placeholder="Course Name"
+                        />
+                      </div>
+                    </div>
+                    <!-- Burada kullanıcı rolü ile birlikte yetki bilgisini de gizli olarak formda yollamış oluyoruz. -->
+                    <div class="form-group">
+                      <div class="col-sm-12">
+                        <input
+                          type="hidden"
+                          name="role"
+                          class="form-control"
+                          value="<%= user.role %>"
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-sm-12">
+                        <textarea
+                          rows="8"
+                          name="description"
+                          class="form-control"
+                          placeholder="Course Description"
+                          required
+                        ><%= courses[i].description %></textarea>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="col-sm-12">
+                        <select class="form-control" name="category" id="">
+                          <% for(let i = 0 ; i < categories.length ; i++) { %>
+                          <option value="<%= categories[i]._id %>">
+                            <%= categories[i].name %>
+                          </option>
+                          <!-- Burada value olarak category id gönderiyoruz. -->
+                          <% } %>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-10">
+                        <button
+                          type="submit"
+                          class="btn btn-light btn-radius btn-brd grd1"
+                        >
+                          Submit
+                        </button>
+                        <button
+                          type="submit"
+                          class="btn btn-light btn-radius btn-brd grd1"
+                          data-dismiss="modal"
+                          aria-hidden="true"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <% } %>
       <!-- end col -->
     </div>

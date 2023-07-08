@@ -122,3 +122,23 @@ exports.deleteCourse = async (req, res) => {
     });
   }
 };
+
+exports.updateCourse = async (req, res) => {
+  try {
+    const course = await Course.findOne({ slug: req.params.slug });
+    course.name = req.body.name;
+    course.description = req.body.description;
+    course.category = req.body.category;
+    course.slug = req.body.slug
+    course.save();
+    // findOne kullanıp, tek tek parametreleri eiştlemek yerine findOneAndUpdate kullanıp tek seferde parametreleri de eşitleyebiliriz fakat slug aynı kalıyor.
+    // const course = await Course.findOneAndUpdate({ slug: req.params.slug }, req.body,);
+    req.flash('success', `${course.name} has been updated successfully`);
+    res.status(200).redirect('/users/dashboard');
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      error,
+    });
+  }
+};
