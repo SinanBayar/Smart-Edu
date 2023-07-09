@@ -58,10 +58,26 @@ exports.getDashboardPage = async (req, res) => {
   ); // id'si, session'daki userID'ye eşit olan kullanıcıyı bul.
   const categories = await Category.find();
   const courses = await Course.find({ user: req.session.userID });
+  const users = await User.find();
   res.status(200).render('dashboard', {
     page_name: 'dashboard',
     user,
     categories,
     courses,
+    users,
   });
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndRemove(req.params.id);
+    await Course.deleteMany({ user: req.params.id }); // Silinen Teacher'a ait tüm kursları da siliyoruz.
+    req.flash('error', `${user.name} has been removed!`);
+    res.status(200).redirect('/users/dashboard');
+  } catch (error) {
+    res.status(400).json({
+      status: 'fail',
+      error,
+    });
+  }
 };
