@@ -1,9 +1,19 @@
 const nodemailer = require('nodemailer');
+const Course = require('../models/Course');
+const User = require('../models/User');
 
-exports.getIndexPage = (req, res) => {
+exports.getIndexPage = async (req, res) => {
   console.log(`Your user session id: ${req.session.userID}`); // Sayfa açılışında hangi kullanıcı varsa, onun sessionID'sini görelim.
+  const courses = await Course.find().sort('-createdAt').limit(2); // En son eklenen 2 course
+  const totalCourses = await Course.find().countDocuments(); // Toplam course sayısı
+  const totalStudents = await User.countDocuments({ role: 'Student' }); // Toplam student sayısı
+  const totalTeachers = await User.countDocuments({ role: 'Teacher' }); // Toplam student sayısı
   res.status(200).render('index', {
     page_name: 'index',
+    courses,
+    totalCourses,
+    totalStudents,
+    totalTeachers,
   });
 };
 
@@ -67,7 +77,7 @@ exports.sendEmail = async (req, res) => {
     res.status(200).redirect('contact');
   } catch (err) {
     // req.flash('error', `Something Happened! ${err}`);
-    req.flash('error', "Something Happened!");
+    req.flash('error', 'Something Happened!');
     res.status(200).redirect('contact');
   }
 };
